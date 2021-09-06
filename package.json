@@ -13,8 +13,12 @@
     "google-protobuf": "^3.18.0-rc.2",
     "typescript": "^4.4.2"
   },
+  "files": [
+    "bin",
+    "lib"
+  ],
   "scripts": {
-    "build": "tsc",
+    "build": "rm -rf lib && tsc",
     "test": "protoc --plugin \"protoc-gen-mirage=$HOME/Code/hashicorp/protoc-gen-mirage/bin/protoc-gen-mirage\" --mirage_out generated proto/example.proto"
   }
 }

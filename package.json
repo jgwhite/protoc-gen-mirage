@@ -5,7 +5,7 @@
   "scripts": {
     "build": "yarn clean && tsc",
     "clean": "rm -rf lib",
-    "test": "protoc --plugin \"protoc-gen-mirage=./bin/protoc-gen-mirage\" --mirage_out generated proto/example.proto"
+    "test": "yarn build && protoc --plugin \"protoc-gen-mirage=./bin/protoc-gen-mirage\" --mirage_out generated proto/example.proto"
   },
   "files": [
     "bin",
@@ -15,6 +15,7 @@
     "protoc-gen-mirage": "bin/protoc-gen-mirage"
   },
   "dependencies": {
+    "ast-types": "^0.14.2",
     "google-protobuf": "^3.18.0-rc.2",
     "recast": "^0.20.5"
   },

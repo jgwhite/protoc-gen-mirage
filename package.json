@@ -18,7 +18,8 @@
     "lib"
   ],
   "scripts": {
-    "build": "rm -rf lib && tsc",
-    "test": "protoc --plugin \"protoc-gen-mirage=$HOME/Code/hashicorp/protoc-gen-mirage/bin/protoc-gen-mirage\" --mirage_out generated proto/example.proto"
+    "build": "yarn clean && tsc",
+    "clean": "rm -rf lib",
+    "test": "protoc --plugin \"protoc-gen-mirage=./bin/protoc-gen-mirage\" --mirage_out generated proto/example.proto"
   }
 }

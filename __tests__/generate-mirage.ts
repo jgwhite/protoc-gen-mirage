@@ -62,7 +62,11 @@ expect.extend({
     if (!file) {
       return {
         pass: false,
-        message: () => `expected response to contain ${path}`,
+        message: () =>
+          `expected response to contain ${path}\nactually contained:\n${received
+            .getFileList()
+            .map((f) => "- " + f.getName())
+            .join("\n")}`,
       };
     }
     if (!file.getContent().includes(content)) {

@@ -4,7 +4,9 @@
   "license": "MIT",
   "scripts": {
     "build": "tsc",
-    "clean": "rm -rf lib generated/*",
+    "clean:build": "rm -rf lib",
+    "clean:demo": "rm -rf generated/*",
+    "clean": "npm-run-all clean:*",
     "demo": "protoc --plugin \"protoc-gen-mirage=./bin/protoc-gen-mirage\" --mirage_out generated proto/example.proto",
     "test": "jest",
     "prepare": "npm-run-all clean build"

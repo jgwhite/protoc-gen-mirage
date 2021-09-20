@@ -33,12 +33,12 @@ test("foo", () => {
 
   expect(response).toHaveFileWith(
     "mirage/config.ts",
-    "this.post('/ListAnimals', animals.list)"
+    'this.post("/ListAnimals", animals.list)'
   );
 
   expect(response).toHaveFileWith(
     "mirage/handlers/animals.ts",
-    "export function list"
+    "export function list(): void"
   );
 
   expect(response).toHaveFileWith(
@@ -72,7 +72,8 @@ expect.extend({
     if (!file.getContent().includes(content)) {
       return {
         pass: false,
-        message: () => `expected ${path} to contain ${content}`,
+        message: () =>
+          `expected ${path} to contain ${content}\nactually contained:\n${file.getContent()}`,
       };
     }
 

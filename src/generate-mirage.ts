@@ -1,5 +1,7 @@
 import { CodeGeneratorRequest, CodeGeneratorResponse } from "./proto/plugin";
 import { DescriptorProto } from "google-protobuf/google/protobuf/descriptor_pb";
+import { builders as b } from "ast-types";
+import { print } from "recast";
 
 export function generateMirage(
   request: CodeGeneratorRequest
@@ -27,7 +29,16 @@ function generateConfig(
 ): CodeGeneratorResponse.File {
   const result = new CodeGeneratorResponse.File();
   const protos = request.getProtoFileList();
-  let content = `export default function() {\n`;
+  const block = b.blockStatement([]);
+  const ast = b.program([
+    b.exportDefaultDeclaration(
+      (() => {
+        const result = b.functionDeclaration(null, [], block);
+        result.returnType = b.tsTypeAnnotation(b.tsVoidKeyword());
+        return result;
+      })()
+    ),
+  ]);
 
   result.setName("mirage/config.ts");
 
@@ -39,13 +50,31 @@ function generateConfig(
       const moduleName = pluralize(basename);
       const endpoint = `/List${pluralize(capitalize(basename))}`;
 
-      content += `  this.post('${endpoint}', ${moduleName}.list);\n`;
+      ast.body.unshift(
+        b.importDeclaration(
+          [b.importNamespaceSpecifier(b.identifier(moduleName))],
+          b.stringLiteral(`./handlers/${moduleName}`)
+        )
+      );
+
+      block.body.push(
+        b.expressionStatement(
+          b.callExpression(
+            b.memberExpression(b.thisExpression(), b.identifier("post")),
+            [
+              b.stringLiteral(endpoint),
+              b.memberExpression(
+                b.identifier(moduleName),
+                b.identifier("list")
+              ),
+            ]
+          )
+        )
+      );
     }
   }
 
-  content += "}\n";
-
-  result.setContent(content);
+  result.setContent(print(ast).code);
 
   return result;
 }
@@ -53,13 +82,21 @@ function generateConfig(
 function generateModel(type: DescriptorProto): CodeGeneratorResponse.File {
   const result = new CodeGeneratorResponse.File();
   const basename = type.getName().toLowerCase();
+  const ast = b.program([
+    b.importDeclaration(
+      [b.importSpecifier(b.identifier("Model"))],
+      b.stringLiteral("miragejs")
+    ),
+    b.exportDefaultDeclaration(
+      b.callExpression(
+        b.memberExpression(b.identifier("Model"), b.identifier("extend")),
+        [b.objectExpression([])]
+      )
+    ),
+  ]);
 
   result.setName(`mirage/models/${basename}.ts`);
-  result.setContent(`import { Model } from 'miragejs';
-
-export default Model.extend({
-});
-`);
+  result.setContent(print(ast).code);
 
   return result;
 }
@@ -67,14 +104,21 @@ export default Model.extend({
 function generateFactory(type: DescriptorProto): CodeGeneratorResponse.File {
   const result = new CodeGeneratorResponse.File();
   const basename = type.getName().toLowerCase();
+  const ast = b.program([
+    b.importDeclaration(
+      [b.importSpecifier(b.identifier("Factory"))],
+      b.stringLiteral("miragejs")
+    ),
+    b.exportDefaultDeclaration(
+      b.callExpression(
+        b.memberExpression(b.identifier("Factory"), b.identifier("extend")),
+        [b.objectExpression([])]
+      )
+    ),
+  ]);
 
   result.setName(`mirage/factories/${basename}.ts`);
-  result.setContent(`import { Factory } from 'miragejs';
-
-export default Factory.extend({
-
-});
-`);
+  result.setContent(print(ast).code);
 
   return result;
 }
@@ -82,9 +126,22 @@ export default Factory.extend({
 function generateHandler(type: DescriptorProto): CodeGeneratorResponse.File {
   const result = new CodeGeneratorResponse.File();
   const basename = type.getName().toLowerCase();
+  const ast = b.program([
+    b.exportNamedDeclaration(
+      (() => {
+        const r = b.functionDeclaration(
+          b.identifier("list"),
+          [],
+          b.blockStatement([])
+        );
+        r.returnType = b.tsTypeAnnotation(b.tsVoidKeyword());
+        return r;
+      })()
+    ),
+  ]);
 
   result.setName(`mirage/handlers/${pluralize(basename)}.ts`);
-  result.setContent(`export function list() {}`);
+  result.setContent(print(ast).code);
 
   return result;
 }

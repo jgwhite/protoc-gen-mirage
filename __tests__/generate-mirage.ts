@@ -29,7 +29,9 @@ test("foo", () => {
   const response = generateMirage(request);
   const files = response.getFileList();
 
-  expect(files).toHaveLength(1);
+  expect(files).toHaveLength(2);
   expect(files[0].getName()).toBe("mirage/models/animal.ts");
-  expect(files[0].getContent()).toContain("export default Model.extend({");
+  expect(files[0].getContent()).toContain("export default Model.extend");
+  expect(files[1].getName()).toBe("mirage/factories/animal.ts");
+  expect(files[1].getContent()).toContain("export default Factory.extend");
 });

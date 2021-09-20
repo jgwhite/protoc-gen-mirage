@@ -11,17 +11,28 @@ export function generateMirage(
     const messageTypes = proto.getMessageTypeList();
 
     for (const messageType of messageTypes) {
-      const file = new CodeGeneratorResponse.File();
-      const filename = messageType.getName().toLowerCase();
+      const model = new CodeGeneratorResponse.File();
+      const factory = new CodeGeneratorResponse.File();
+      const basename = messageType.getName().toLowerCase();
 
-      file.setName(`mirage/models/${filename}.ts`);
-      file.setContent(`import { Model } from 'miragejs';
+      model.setName(`mirage/models/${basename}.ts`);
+      model.setContent(`import { Model } from 'miragejs';
 
 export default Model.extend({
 });
 `);
 
-      response.addFile(file);
+      response.addFile(model);
+
+      factory.setName(`mirage/factories/${basename}.ts`);
+      factory.setContent(`import { Factory } from 'miragejs';
+
+export default Factory.extend({
+
+});
+`);
+
+      response.addFile(factory);
     }
   }
 

@@ -50,7 +50,9 @@ function generateConfig(
       const moduleName = pluralize(basename);
       const endpoint = `/List${pluralize(capitalize(basename))}`;
 
-      ast.body.unshift(
+      ast.body.splice(
+        ast.body.length - 1,
+        0,
         b.importDeclaration(
           [b.importNamespaceSpecifier(b.identifier(moduleName))],
           b.stringLiteral(`./handlers/${moduleName}`)

@@ -1,4 +1,7 @@
-import { CodeGeneratorRequest } from "../src/proto/plugin";
+import {
+  CodeGeneratorRequest,
+  CodeGeneratorResponse,
+} from "../src/proto/plugin";
 
 import {
   FileDescriptorProto,
@@ -27,11 +30,60 @@ test("foo", () => {
   request.setProtoFileList([fd]);
 
   const response = generateMirage(request);
-  const files = response.getFileList();
 
-  expect(files).toHaveLength(2);
-  expect(files[0].getName()).toBe("mirage/models/animal.ts");
-  expect(files[0].getContent()).toContain("export default Model.extend");
-  expect(files[1].getName()).toBe("mirage/factories/animal.ts");
-  expect(files[1].getContent()).toContain("export default Factory.extend");
+  expect(response).toHaveFileWith(
+    "mirage/config.ts",
+    "this.post('/ListAnimals', animals.list)"
+  );
+
+  expect(response).toHaveFileWith(
+    "mirage/handlers/animals.ts",
+    "export function list"
+  );
+
+  expect(response).toHaveFileWith(
+    "mirage/models/animal.ts",
+    "export default Model.extend"
+  );
+
+  expect(response).toHaveFileWith(
+    "mirage/factories/animal.ts",
+    "export default Factory.extend"
+  );
 });
+
+expect.extend({
+  toHaveFileWith(
+    received: CodeGeneratorResponse,
+    path: string,
+    content: string
+  ) {
+    const file = received.getFileList().find((f) => f.getName() === path);
+    if (!file) {
+      return {
+        pass: false,
+        message: () => `expected response to contain ${path}`,
+      };
+    }
+    if (!file.getContent().includes(content)) {
+      return {
+        pass: false,
+        message: () => `expected ${path} to contain ${content}`,
+      };
+    }
+
+    return {
+      pass: true,
+      message: () => `expected ${path} not to contain ${content}`,
+    };
+  },
+});
+
+declare global {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
+  namespace jest {
+    interface Matchers<R> {
+      toHaveFileWith(path: string, content: string): R;
+    }
+  }
+}

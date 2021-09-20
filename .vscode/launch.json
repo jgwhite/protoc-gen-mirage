@@ -1,0 +1,24 @@
+{
+  "configurations": [
+    {
+      "name": "jest",
+      "request": "launch",
+      "type": "node",
+      "program": "node_modules/.bin/jest",
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "protoc",
+      "request": "launch",
+      "type": "node",
+      "runtimeExecutable": "/Users/jamie/bin/protoc",
+      "runtimeArgs": [
+        "--plugin=protoc-gen-mirage=${workspaceFolder}/bin/protoc-gen-mirage",
+        "--mirage_out=${workspaceFolder}/generated",
+        "--proto_path=${workspaceFolder}/proto",
+        "${workspaceFolder}/proto/example.proto"
+      ],
+      "console": "integratedTerminal"
+    }
+  ]
+}

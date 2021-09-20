@@ -4,8 +4,10 @@
   "license": "MIT",
   "scripts": {
     "build": "yarn clean && tsc",
-    "clean": "rm -rf lib",
-    "test": "yarn build && protoc --plugin \"protoc-gen-mirage=./bin/protoc-gen-mirage\" --mirage_out generated proto/example.proto"
+    "clean": "rm -rf lib generated/*",
+    "demo": "protoc --plugin \"protoc-gen-mirage=./bin/protoc-gen-mirage\" --mirage_out generated proto/example.proto",
+    "test": "jest",
+    "prepare": "yarn build"
   },
   "files": [
     "bin",
@@ -20,10 +22,18 @@
     "recast": "^0.20.5"
   },
   "devDependencies": {
+    "@babel/core": "^7.15.5",
+    "@babel/preset-env": "^7.15.4",
+    "@babel/preset-typescript": "^7.15.0",
+    "@types/google-protobuf": "^3.15.5",
+    "@types/jest": "^27.0.1",
     "@types/node": "^16.7.10",
     "@typescript-eslint/eslint-plugin": "^4.31.0",
     "@typescript-eslint/parser": "^4.31.0",
+    "babel-jest": "^27.1.0",
     "eslint": "^7.32.0",
+    "eslint-plugin-jest": "^24.4.0",
+    "jest": "^27.1.0",
     "typescript": "^4.4.2"
   }
 }

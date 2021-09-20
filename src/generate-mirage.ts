@@ -15,6 +15,11 @@ export function generateMirage(
       const filename = messageType.getName().toLowerCase();
 
       file.setName(`mirage/models/${filename}.ts`);
+      file.setContent(`import { Model } from 'miragejs';
+
+export default Model.extend({
+});
+`);
 
       response.addFile(file);
     }

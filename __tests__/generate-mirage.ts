@@ -31,4 +31,5 @@ test("foo", () => {
 
   expect(files).toHaveLength(1);
   expect(files[0].getName()).toBe("mirage/models/animal.ts");
+  expect(files[0].getContent()).toContain("export default Model.extend({");
 });

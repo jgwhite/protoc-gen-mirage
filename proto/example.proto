@@ -5,3 +5,8 @@ package example;
 message Animal {
   string name = 1;
 }
+
+message Zoo {
+  string name = 1;
+  string address = 2;
+}

@@ -33,17 +33,17 @@ test("foo", () => {
 
   expect(response).toHaveFileWith(
     "mirage/config.ts",
-    'this.post("/ListAnimals", animals.list)'
+    "this.post('/ListAnimals', animal.list)"
   );
 
   expect(response).toHaveFileWith(
-    "mirage/handlers/animals.ts",
+    "mirage/handlers/animal.ts",
     "export function list(): void"
   );
 
   expect(response).toHaveFileWith(
     "mirage/models/animal.ts",
-    'import { Animal } from "waypoint-pb"',
+    "import { Animal } from 'waypoint-pb'",
     "export default Model.extend",
     "toProtobuf(): Animal {"
   );

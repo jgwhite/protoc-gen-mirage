@@ -1,7 +1,16 @@
 import { CodeGeneratorRequest, CodeGeneratorResponse } from "./proto/plugin";
 import { DescriptorProto } from "google-protobuf/google/protobuf/descriptor_pb";
-import { builders as b } from "ast-types";
+import { ASTNode, builders as b } from "ast-types";
 import { print } from "recast";
+
+function p(node: ASTNode): string {
+  return print(node, {
+    tabWidth: 2,
+    useTabs: false,
+    quote: "single",
+    trailingComma: true,
+  }).code;
+}
 
 export function generateMirage(
   request: CodeGeneratorRequest
@@ -47,7 +56,7 @@ function generateConfig(
 
     for (const messageType of proto.getMessageTypeList()) {
       const basename = messageType.getName().toLowerCase();
-      const moduleName = pluralize(basename);
+      const moduleName = basename;
       const endpoint = `/List${pluralize(capitalize(basename))}`;
 
       ast.body.splice(
@@ -76,7 +85,7 @@ function generateConfig(
     }
   }
 
-  result.setContent(print(ast).code);
+  result.setContent(p(ast));
 
   return result;
 }
@@ -125,7 +134,7 @@ function generateModel(type: DescriptorProto): CodeGeneratorResponse.File {
   ]);
 
   result.setName(`mirage/models/${basename}.ts`);
-  result.setContent(print(ast).code);
+  result.setContent(p(ast));
 
   return result;
 }
@@ -147,7 +156,7 @@ function generateFactory(type: DescriptorProto): CodeGeneratorResponse.File {
   ]);
 
   result.setName(`mirage/factories/${basename}.ts`);
-  result.setContent(print(ast).code);
+  result.setContent(p(ast));
 
   return result;
 }
@@ -169,8 +178,8 @@ function generateHandler(type: DescriptorProto): CodeGeneratorResponse.File {
     ),
   ]);
 
-  result.setName(`mirage/handlers/${pluralize(basename)}.ts`);
-  result.setContent(print(ast).code);
+  result.setName(`mirage/handlers/${basename}.ts`);
+  result.setContent(p(ast));
 
   return result;
 }

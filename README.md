@@ -1,6 +1,6 @@
 # protoc-gen-mirage
 
-Generates [Mirage models] from [Protobufs].
+Generates [Mirage] config from [Protobufs].
 
-[mirage models]: https://miragejs.com/docs/main-concepts/models/
+[mirage]: https://miragejs.com/
 [protobufs]: https://developers.google.com/protocol-buffers

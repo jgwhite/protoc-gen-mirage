@@ -87,12 +87,39 @@ function generateModel(type: DescriptorProto): CodeGeneratorResponse.File {
   const ast = b.program([
     b.importDeclaration(
       [b.importSpecifier(b.identifier("Model"))],
-      b.stringLiteral("miragejs")
+      b.stringLiteral("ember-cli-mirage")
+    ),
+    b.importDeclaration(
+      [b.importSpecifier(b.identifier(capitalize(basename)))],
+      b.stringLiteral("waypoint-pb")
     ),
     b.exportDefaultDeclaration(
       b.callExpression(
         b.memberExpression(b.identifier("Model"), b.identifier("extend")),
-        [b.objectExpression([])]
+        [
+          b.objectExpression([
+            (() => {
+              const result = b.objectMethod(
+                "method",
+                b.identifier("toProtobuf"),
+                [],
+                b.blockStatement([
+                  b.variableDeclaration("let", [
+                    b.variableDeclarator(
+                      b.identifier("result"),
+                      b.newExpression(b.identifier(capitalize(basename)), [])
+                    ),
+                  ]),
+                  b.returnStatement(b.identifier("result")),
+                ])
+              );
+              result.returnType = b.tsTypeAnnotation(
+                b.tsTypeReference(b.identifier(capitalize(basename)))
+              );
+              return result;
+            })(),
+          ]),
+        ]
       )
     ),
   ]);
@@ -109,7 +136,7 @@ function generateFactory(type: DescriptorProto): CodeGeneratorResponse.File {
   const ast = b.program([
     b.importDeclaration(
       [b.importSpecifier(b.identifier("Factory"))],
-      b.stringLiteral("miragejs")
+      b.stringLiteral("ember-cli-mirage")
     ),
     b.exportDefaultDeclaration(
       b.callExpression(

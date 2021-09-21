@@ -43,7 +43,9 @@ test("foo", () => {
 
   expect(response).toHaveFileWith(
     "mirage/models/animal.ts",
-    "export default Model.extend"
+    'import { Animal } from "waypoint-pb"',
+    "export default Model.extend",
+    "toProtobuf(): Animal {"
   );
 
   expect(response).toHaveFileWith(
@@ -56,7 +58,7 @@ expect.extend({
   toHaveFileWith(
     received: CodeGeneratorResponse,
     path: string,
-    content: string
+    ...contents: string[]
   ) {
     const file = received.getFileList().find((f) => f.getName() === path);
     if (!file) {
@@ -69,17 +71,20 @@ expect.extend({
             .join("\n")}`,
       };
     }
-    if (!file.getContent().includes(content)) {
-      return {
-        pass: false,
-        message: () =>
-          `expected ${path} to contain ${content}\nactually contained:\n${file.getContent()}`,
-      };
+
+    for (const content of contents) {
+      if (!file.getContent().includes(content)) {
+        return {
+          pass: false,
+          message: () =>
+            `expected ${path} to contain ${content}\nactually contained:\n${file.getContent()}`,
+        };
+      }
     }
 
     return {
       pass: true,
-      message: () => `expected ${path} not to contain ${content}`,
+      message: () => `expected ${path} not to contain ${contents.join(" OR ")}`,
     };
   },
 });
@@ -88,7 +93,7 @@ declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace jest {
     interface Matchers<R> {
-      toHaveFileWith(path: string, content: string): R;
+      toHaveFileWith(path: string, ...contents: string[]): R;
     }
   }
 }
